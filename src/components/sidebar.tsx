@@ -1,7 +1,8 @@
-import { Events } from "@/App";
+import { Event, Events } from "@/App";
 import { formatDate } from "@/lib/utils";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import {
   Sheet,
   SheetContent,
@@ -12,7 +13,7 @@ import {
 
 interface SidebarProps {
   isSidebarOpen: boolean;
-  setIsSidebarOpen: (value: React.SetStateAction<boolean>) => void;
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedDate: Date;
   events: Events;
 }
@@ -23,9 +24,32 @@ const Sidebar = ({
   selectedDate,
   events,
 }: SidebarProps) => {
+  const showThisDateEvents =
+    Object.entries(events).filter(
+      ([date]) => formatDate(selectedDate) === date
+    )[0] || [];
+
+  console.log(showThisDateEvents);
+  const [filterTerm, setFilterTerm] = useState<string>("");
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>();
+
+  console.log(showThisDateEvents);
+
+  if (filterTerm.length > 1) {
+    const currentEvents = showThisDateEvents[1].filter((e) =>
+      e.name.toLowerCase().includes(filterTerm.toLowerCase())
+    );
+
+    setFilteredEvents(currentEvents);
+  }
+
+  const eventsTobeRendered = (
+    filterTerm.length > 1 ? filteredEvents : showThisDateEvents[1]
+  )!;
+
   return (
     <Sheet open={isSidebarOpen} onOpenChange={() => setIsSidebarOpen(false)}>
-      <SheetContent className="w-80 bg-white shadow-md border-r border-gray-200">
+      <SheetContent className="w-80 xs:w-96 bg-white shadow-md border-r border-gray-200">
         <SheetHeader className="p-4 border-b border-gray-200">
           <SheetTitle className="text-2xl font-bold text-gray-800">
             Your Events
@@ -35,40 +59,43 @@ const Sidebar = ({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="p-4 space-y-4">
-          {selectedDate ? (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700">
-                Events on {formatDate(selectedDate)}:
-              </h3>
-              {/* 
-              <Input
-                type="text"
-                placeholder="Filter events by name"
-                className="w-full border rounded-md p-2 mb-4"
-                value={filterTerm}
-                onChange={(e) => handleFilter(e.target.value)}
-              /> */}
+        <div className="md:p-4 p-1 space-y-4">
+          <h3 className="md:text-lg sm:text-start text-center md:mb-4 mb-2 font-semibold text-gray-700">
+            Events on {formatDate(selectedDate)}
+          </h3>
 
-              {Object.keys(events).length > 0 ? (
-                <ul className="space-y-2">
-                  {Object.entries(events).map((event, index) => {
-                    return (
-                      <li className="" key={index}>
-                        {event[0]}
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : (
-                <p className="text-gray-500 italic">
-                  No events match your search.
-                </p>
-              )}
-            </div>
+          <Input
+            type="text"
+            placeholder="Filter events by name"
+            className="w-full border rounded-md p-2 mb-4"
+            value={filterTerm}
+            onChange={(e) => setFilterTerm(e.target.value)}
+          />
+
+          {eventsTobeRendered?.length > 0 ? (
+            <ul className="space-y-2 md:h-[420px] h-72 overflow-y-scroll">
+              {eventsTobeRendered.map((event, idx) => (
+                <li
+                  key={idx}
+                  className="p-3 bg-blue-100 border-l-4 border-blue-500 rounded-md shadow-sm"
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-800">
+                      {event.name}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      {event.startTime} - {event.endTime}
+                    </span>
+                  </div>
+                  <p className="text-gray-700 text-sm mt-1">
+                    {event.description}
+                  </p>
+                </li>
+              ))}
+            </ul>
           ) : (
             <p className="text-gray-500 italic">
-              Select a date to view events.
+              No events found, Create new one.
             </p>
           )}
         </div>
