@@ -1,50 +1,78 @@
-# React + TypeScript + Vite
+# Event Management Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+The Event Management Application is a modern web-based tool for scheduling events with robust validation to avoid time conflicts. Built using React, **Zod** for form validation, and **shadcn/ui** for customizable UI components and notifications, it provides an intuitive user experience. Event data persists across sessions using **localStorage**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### **Add Events**
 
-- Configure the top-level `parserOptions` property like this:
+- Users can specify:
+  - **Event Name**, **Start Time**, **End Time**, and **Description**.
+- Modal-based interface for focused event creation.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### **Date-Specific Scheduling**
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+- Events are organized and displayed by selected dates.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### **No Overlaps**
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- Prevents overlapping events on the same date with:
+  - Time range validation.
+  - Alerts for conflicts during scheduling.
+
+### **Persistent Storage**
+
+- Event data is stored in **localStorage**, ensuring persistence across page reloads and rerenders.
+
+### **User-Friendly UI**
+
+- Components from **shadcn/ui** include:
+  - Inputs for event details.
+  - Toast notifications for feedback.
+  - Responsive and accessible design.
+
+### **Error Handling**
+
+- Inline validation ensures:
+  - End time is after the start time.
+  - No overlapping time slots.
+
+---
+
+## Workflow
+
+1. **Select a Date**: Choose a date to schedule events.
+2. **Add Event**: Open a modal to enter event details.
+3. **Validate and Save**:
+   - **Zod** validates inputs.
+   - Conflicts trigger toast notifications; valid events are saved.
+4. **View Events**: Browse scheduled events by date.
+
+---
+
+## Technical Details
+
+### **Frontend**
+
+- **React** for UI.
+- Local state with hooks for managing events and modals.
+
+### **Validation**
+
+- **Zod** for schema-based form validation.
+- Time parsing and conflict detection for event overlap prevention.
+
+### **Storage**
+
+- Events organized as `{ "DD-MM-YYYY": [{...eventDetails}] }`.
+- Persisted using **localStorage** for session durability.
+
+---
+
+## Conclusion
+
+This application offers an efficient, user-friendly way to manage events, ensuring time conflicts are avoided. With its use of **localStorage** for persistence and modular design, the app is tailored for reliable event scheduling.
