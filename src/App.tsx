@@ -1,27 +1,19 @@
-import React, { useState, useEffect } from "react";
-// import { Modal, Button, Input, Textarea } from "shadcn";
-import "./App.css"; // Tailwind styles
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import DateKey from "./components/date-key";
+import Modal from "./components/modal";
+import Sidebar from "./components/sidebar";
 import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
-import { Textarea } from "./components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./components/ui/dialog";
-import { formatDate } from "./lib/utils";
 
-type Event = {
+export type Event = {
   name: string;
   startTime: string;
   endTime: string;
   description: string;
 };
 
-type Events = {
-  [key: string]: Event[];
+export type Events = {
+  [key: string]: Event[]; // Keyed by date in "DD-MM-YYYY" format
 };
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -30,6 +22,7 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const getDaysInMonth = (year: number, month: number): Date[] => {
   const date = new Date(year, month, 1);
   const days: Date[] = [];
+
   while (date.getMonth() === month) {
     days.push(new Date(date));
     date.setDate(date.getDate() + 1);
@@ -39,15 +32,12 @@ const getDaysInMonth = (year: number, month: number): Date[] => {
 
 const App: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [events, setEvents] = useState<Events>({}); // { "DD-MM-YYYY": [{ name, startTime, endTime, description }] }
+  const [events, setEvents] = useState<Events>({});
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [modalOpen, setModalOpen] = useState<boolean>(true);
-  const [eventForm, setEventForm] = useState<Event>({
-    name: "",
-    startTime: "",
-    endTime: "",
-    description: "",
-  });
+  // const [filterTerm, setFilterTerm] = useState<string>("");
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  // const [filteredEvents, setFilteredEvents] = useState<Events>();
 
   useEffect(() => {
     const storedEvents = localStorage.getItem("events");
@@ -72,28 +62,11 @@ const App: React.FC = () => {
     );
   };
 
-  const handleDayClick = (date: Date) => {
-    setSelectedDate(date);
-    setModalOpen(true);
-  };
-
-  const handleEventSubmit = () => {
-    if (!selectedDate) return;
-
-    const dateKey = formatDate(selectedDate)!;
-    const newEvents = { ...events };
-    if (!newEvents[dateKey]) newEvents[dateKey] = [];
-    newEvents[dateKey].push(eventForm);
-
-    setEvents(newEvents);
-    setEventForm({ name: "", startTime: "", endTime: "", description: "" });
-    setModalOpen(false);
-  };
-
   const days = getDaysInMonth(
     currentDate.getFullYear(),
     currentDate.getMonth()
   );
+
   const startDay = days[0].getDay();
 
   return (
@@ -120,77 +93,36 @@ const App: React.FC = () => {
           ))}
 
           {days.map((date) => {
-            const dateKey = date.toISOString().split("T")[0];
-            const isToday = new Date().toDateString() === date.toDateString();
+            // const dateKey = formatDate(date)!;
+
+            // const dayEvents = events[dateKey] || [];
 
             return (
-              <button
-                key={date.toISOString()}
-                className={`p-4 border rounded-lg ${
-                  isToday ? "bg-blue-100" : "hover:bg-gray-100"
-                }`}
-                onClick={() => handleDayClick(date)}
-              >
-                {date.getDate()}
-              </button>
+              <DateKey
+                date={date}
+                setIsSidebarOpen={setIsSidebarOpen}
+                setModalOpen={setModalOpen}
+                setSelectedDate={setSelectedDate}
+              />
             );
           })}
         </div>
       </div>
 
-      <div className="">{JSON.stringify(events)}</div>
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        events={events}
+        selectedDate={selectedDate!}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
 
-      {modalOpen && (
-        <Dialog open={modalOpen} onOpenChange={() => setModalOpen(false)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Event {formatDate(selectedDate)}</DialogTitle>
-              <DialogDescription>
-                Fill out the details for your event below. Click "Save" to
-                confirm your changes.
-              </DialogDescription>
-            </DialogHeader>
-
-            <Input
-              placeholder="Event Name"
-              value={eventForm.name}
-              onChange={(e) =>
-                setEventForm({ ...eventForm, name: e.target.value })
-              }
-            />
-            <Input
-              type="time"
-              placeholder="Start Time"
-              value={eventForm.startTime}
-              onChange={(e) =>
-                setEventForm({ ...eventForm, startTime: e.target.value })
-              }
-            />
-            <Input
-              type="time"
-              placeholder="End Time"
-              value={eventForm.endTime}
-              onChange={(e) =>
-                setEventForm({ ...eventForm, endTime: e.target.value })
-              }
-            />
-            <Textarea
-              placeholder="Description"
-              value={eventForm.description}
-              onChange={(e) =>
-                setEventForm({ ...eventForm, description: e.target.value })
-              }
-            />
-            <div className="flex justify-end space-x-2 mt-4">
-              <Button onClick={() => setModalOpen(false)}>Cancel</Button>
-
-              <Button onClick={handleEventSubmit} variant="default">
-                Save
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+      <Modal
+        modalOpen={modalOpen}
+        selectedDate={selectedDate!}
+        setModalOpen={setModalOpen}
+        events={events}
+        setEvents={setEvents}
+      />
     </div>
   );
 };
