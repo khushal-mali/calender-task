@@ -4,13 +4,19 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "./ui/sheet";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -97,8 +103,22 @@ const Sidebar = ({
                       {event.startTime} - {event.endTime}
                     </span>
                   </div>
-                  <p className="text-gray-700 text-sm mt-1">
-                    {event.description}
+                  <p className="text-gray-700 flex flex-col gap-1 text-sm mt-1">
+                    <span>{event.description}</span>
+                    <div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Trash2 className="size-6 hover:text-red-900 hover:bg-red-200 cursor-pointer p-1 rounded-sm justify-self-end" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="font-medium text-lg">
+                              Delete the event
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </p>
                 </li>
               ))}

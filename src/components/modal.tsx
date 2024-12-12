@@ -18,7 +18,7 @@ export const eventFormVal = z.object({
   name: z.string().min(3).max(40),
   startTime: z.string(),
   endTime: z.string(),
-  description: z.string().min(3).max(150),
+  description: z.string().optional(),
 });
 
 interface ModalProps {
