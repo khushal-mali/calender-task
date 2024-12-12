@@ -68,7 +68,7 @@ const App: React.FC = () => {
       <Navbar />
 
       <div className="bg-gray-100 md:p-6 p-2">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-2 sm:p-6">
+        <section className="max-w-4xl mx-auto bg-white rounded-lg shadow p-2 sm:p-6">
           <header className="flex justify-between items-center mb-4">
             <Button
               onClick={handlePrevMonth}
@@ -113,7 +113,7 @@ const App: React.FC = () => {
               );
             })}
           </div>
-        </div>
+        </section>
 
         {selectedDate && (
           <Sidebar
