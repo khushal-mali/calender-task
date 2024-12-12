@@ -3,6 +3,7 @@ import DateKey from "./components/date-key";
 import Modal from "./components/modal";
 import Sidebar from "./components/sidebar";
 import { Button } from "./components/ui/button";
+import Navbar from "./components/navbar";
 
 export type Event = {
   name: string;
@@ -63,74 +64,78 @@ const App: React.FC = () => {
   const startDay = days[0].getDay();
 
   return (
-    <div className="min-h-screen bg-gray-100 md:p-6 p-2">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-2 sm:p-6">
-        <header className="flex justify-between items-center mb-4">
-          <Button
-            onClick={handlePrevMonth}
-            className="text-xs sm:text-base md:text-lg px-2 sm:px-4 py-1 sm:py-3"
-          >
-            Previous
-          </Button>
-          <h1 className="sm:text-xl text-lg sm:font-bold font-semibold">
-            {currentDate.toLocaleString("default", { month: "long" })}{" "}
-            {currentDate.getFullYear()}
-          </h1>
-          <Button
-            className="text-xs sm:text-base md:text-lg px-2 sm:px-4 py-1 sm:py-3"
-            onClick={handleNextMonth}
-          >
-            Next
-          </Button>
-        </header>
+    <>
+      <Navbar />
 
-        <div className="grid grid-cols-7 gap-2 text-center">
-          {DAYS.map((day, idx) => (
-            <div
-              key={idx}
-              className="font-medium text-xs md:text-base text-gray-600"
+      <div className="bg-gray-100 md:p-6 p-2">
+        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-2 sm:p-6">
+          <header className="flex justify-between items-center mb-4">
+            <Button
+              onClick={handlePrevMonth}
+              className="text-xs sm:text-base md:text-lg px-2 sm:px-4 py-1 sm:py-3"
             >
-              {day}
-            </div>
-          ))}
+              Previous
+            </Button>
+            <h1 className="sm:text-xl text-lg sm:font-bold font-semibold">
+              {currentDate.toLocaleString("default", { month: "long" })}{" "}
+              {currentDate.getFullYear()}
+            </h1>
+            <Button
+              className="text-xs sm:text-base md:text-lg px-2 sm:px-4 py-1 sm:py-3"
+              onClick={handleNextMonth}
+            >
+              Next
+            </Button>
+          </header>
 
-          {Array.from({ length: startDay }).map((_, idx) => (
-            <div key={idx}></div>
-          ))}
+          <div className="grid grid-cols-7 gap-2 text-center">
+            {DAYS.map((day, idx) => (
+              <div
+                key={idx}
+                className="font-medium text-xs md:text-base text-gray-600"
+              >
+                {day}
+              </div>
+            ))}
 
-          {days.map((date) => {
-            return (
-              <DateKey
-                date={date}
-                setIsSidebarOpen={setIsSidebarOpen}
-                setModalOpen={setModalOpen}
-                setSelectedDate={setSelectedDate}
-              />
-            );
-          })}
+            {Array.from({ length: startDay }).map((_, idx) => (
+              <div key={idx}></div>
+            ))}
+
+            {days.map((date) => {
+              return (
+                <DateKey
+                  date={date}
+                  setIsSidebarOpen={setIsSidebarOpen}
+                  setModalOpen={setModalOpen}
+                  setSelectedDate={setSelectedDate}
+                />
+              );
+            })}
+          </div>
         </div>
+
+        {selectedDate && (
+          <Sidebar
+            isSidebarOpen={isSidebarOpen}
+            events={events}
+            selectedDate={selectedDate}
+            setModalOpen={setModalOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        )}
+
+        {selectedDate && (
+          <Modal
+            modalOpen={modalOpen}
+            selectedDate={selectedDate}
+            setModalOpen={setModalOpen}
+            events={events}
+            setEvents={setEvents}
+          />
+        )}
       </div>
-
-      {selectedDate && (
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          events={events}
-          selectedDate={selectedDate}
-          setModalOpen={setModalOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
-        />
-      )}
-
-      {selectedDate && (
-        <Modal
-          modalOpen={modalOpen}
-          selectedDate={selectedDate}
-          setModalOpen={setModalOpen}
-          events={events}
-          setEvents={setEvents}
-        />
-      )}
-    </div>
+    </>
   );
 };
 
