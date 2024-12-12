@@ -6,6 +6,7 @@ import { Button } from "./components/ui/button";
 import Navbar from "./components/navbar";
 
 export type Event = {
+  id: string;
   name: string;
   startTime: string;
   endTime: string;
@@ -39,6 +40,8 @@ const App: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+
+  console.log(events);
 
   useEffect(() => {
     localStorage.setItem("events", JSON.stringify(events));
@@ -119,6 +122,7 @@ const App: React.FC = () => {
           <Sidebar
             isSidebarOpen={isSidebarOpen}
             events={events}
+            setEvents={setEvents}
             selectedDate={selectedDate}
             setModalOpen={setModalOpen}
             setIsSidebarOpen={setIsSidebarOpen}

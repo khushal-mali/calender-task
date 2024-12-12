@@ -1,14 +1,15 @@
 import { Event, Events } from "@/App";
-import { formatDate } from "@/lib/utils";
-import React, { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { formatDate } from "@/lib/utils";
+import { Plus, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import {
   Sheet,
   SheetContent,
@@ -16,14 +17,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "./ui/sheet";
-import { Plus, Trash2 } from "lucide-react";
 
 interface SidebarProps {
-  isSidebarOpen: boolean;
-  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedDate: Date;
   events: Events;
+  isSidebarOpen: boolean;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setEvents: React.Dispatch<React.SetStateAction<Events>>;
 }
 
 const Sidebar = ({
@@ -32,6 +33,7 @@ const Sidebar = ({
   selectedDate,
   setModalOpen,
   events,
+  setEvents,
 }: SidebarProps) => {
   const showThisDateEvents =
     Object.entries(events).filter(
@@ -41,8 +43,6 @@ const Sidebar = ({
   console.log(showThisDateEvents);
   const [filterTerm, setFilterTerm] = useState<string>("");
   const [filteredEvents, setFilteredEvents] = useState<Event[]>();
-
-  console.log(showThisDateEvents);
 
   if (filterTerm.length > 1) {
     const currentEvents = showThisDateEvents[1].filter((e) =>
@@ -55,6 +55,24 @@ const Sidebar = ({
   const eventsTobeRendered = (
     filterTerm.length > 1 ? filteredEvents : showThisDateEvents[1]
   )!;
+
+  const handleDeleteEvent = (id: string, name: string) => {
+    const userConfirmed = confirm(
+      `Are you sure you want to delete ${name} event?`
+    );
+
+    if (!userConfirmed) return;
+
+    const dateKey = formatDate(selectedDate)!;
+    const newEvents = { ...events };
+
+    // Only check events on the selected date
+    const eventsOnSelectedDate = newEvents[dateKey];
+
+    newEvents[dateKey] = eventsOnSelectedDate.filter((e) => e.id !== id);
+
+    setEvents(newEvents);
+  };
 
   return (
     <Sheet open={isSidebarOpen} onOpenChange={() => setIsSidebarOpen(false)}>
@@ -108,7 +126,12 @@ const Sidebar = ({
                     <div>
                       <TooltipProvider>
                         <Tooltip>
-                          <TooltipTrigger asChild>
+                          <TooltipTrigger
+                            asChild
+                            onClick={() =>
+                              handleDeleteEvent(event.id, event.name)
+                            }
+                          >
                             <Trash2 className="size-6 hover:text-red-900 hover:bg-red-200 cursor-pointer p-1 rounded-sm justify-self-end" />
                           </TooltipTrigger>
                           <TooltipContent>

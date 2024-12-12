@@ -13,8 +13,10 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { v4 as uuidv4 } from "uuid";
 
 export const eventFormVal = z.object({
+  id: z.string(),
   name: z.string().min(3).max(40),
   startTime: z.string(),
   endTime: z.string(),
@@ -36,8 +38,10 @@ const Modal = ({
   events,
   setEvents,
 }: ModalProps) => {
+  const randomId = uuidv4();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [eventForm, setEventForm] = useState<Event>({
+    id: "",
     name: "",
     startTime: "",
     endTime: "",
@@ -50,6 +54,7 @@ const Modal = ({
     if (!selectedDate) return;
 
     try {
+      eventForm.id = randomId;
       await eventFormVal.parseAsync(eventForm);
       const dateKey = formatDate(selectedDate)!; // DD-MM-YYYY
 
@@ -94,7 +99,13 @@ const Modal = ({
       console.log(eventForm);
 
       // Reset form and close modal
-      setEventForm({ name: "", startTime: "", endTime: "", description: "" });
+      setEventForm({
+        id: "",
+        name: "",
+        startTime: "",
+        endTime: "",
+        description: "",
+      });
       setModalOpen(false);
     } catch (error) {
       if (error instanceof z.ZodError) {
