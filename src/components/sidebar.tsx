@@ -10,18 +10,21 @@ import {
   SheetHeader,
   SheetTitle,
 } from "./ui/sheet";
+import { Plus } from "lucide-react";
 
 interface SidebarProps {
   isSidebarOpen: boolean;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedDate: Date;
   events: Events;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Sidebar = ({
   isSidebarOpen,
   setIsSidebarOpen,
   selectedDate,
+  setModalOpen,
   events,
 }: SidebarProps) => {
   const showThisDateEvents =
@@ -60,9 +63,16 @@ const Sidebar = ({
         </SheetHeader>
 
         <div className="md:p-4 p-1 space-y-4">
-          <h3 className="md:text-lg sm:text-start text-center md:mb-4 mb-2 font-semibold text-gray-700">
+          <div className="md:text-lg flex items-center justify-between sm:text-start text-center md:mb-4 mb-2 font-semibold text-gray-700">
             Events on {formatDate(selectedDate)}
-          </h3>
+            <Button
+              size={"sm"}
+              onClick={() => setModalOpen(true)}
+              className="bg-blue-500 flex items-center text-white hover:bg-blue-600"
+            >
+              <Plus className="size-4" /> event
+            </Button>
+          </div>
 
           <Input
             type="text"

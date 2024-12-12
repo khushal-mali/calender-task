@@ -13,6 +13,7 @@ interface DateKeyProps {
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  key?: Date;
 }
 
 const DateKey = ({
@@ -37,11 +38,13 @@ const DateKey = ({
     <DropdownMenu>
       <DropdownMenuTrigger
         key={date.toISOString()}
-        className={`px-4 py-8 border rounded-lg text-left ${
+        className={`md:px-4 sm:px-2 px-1 text-center md:py-6 py-2 border rounded-lg md:text-left ${
           isToday ? "bg-blue-100" : "hover:bg-gray-100"
         }`}
       >
-        <div className="font-bold text-lg">{date.getDate()}</div>
+        <div className="md:font-bold font-semibold md:text-lg">
+          {date.getDate()}
+        </div>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent side="bottom" align="start" className="w-64">
