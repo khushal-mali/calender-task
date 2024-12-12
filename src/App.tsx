@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
 import DateKey from "./components/date-key";
 import Modal from "./components/modal";
 import Sidebar from "./components/sidebar";
@@ -32,19 +31,13 @@ const getDaysInMonth = (year: number, month: number): Date[] => {
 
 const App: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [events, setEvents] = useState<Events>({});
+  const [events, setEvents] = useState<Events>(() => {
+    const storedEvents = localStorage.getItem("events");
+    return storedEvents ? JSON.parse(storedEvents) : {};
+  });
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  // const [filterTerm, setFilterTerm] = useState<string>("");
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  // const [filteredEvents, setFilteredEvents] = useState<Events>();
-
-  useEffect(() => {
-    const storedEvents = localStorage.getItem("events");
-    if (storedEvents) {
-      setEvents(JSON.parse(storedEvents));
-    }
-  }, []);
 
   useEffect(() => {
     localStorage.setItem("events", JSON.stringify(events));
@@ -70,20 +63,33 @@ const App: React.FC = () => {
   const startDay = days[0].getDay();
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
+    <div className="min-h-screen bg-gray-100 md:p-6 p-2">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-2 sm:p-6">
         <header className="flex justify-between items-center mb-4">
-          <Button onClick={handlePrevMonth}>Previous</Button>
-          <h1 className="text-xl font-bold">
+          <Button
+            onClick={handlePrevMonth}
+            className="text-xs sm:text-base md:text-lg px-2 sm:px-4 py-1 sm:py-3"
+          >
+            Previous
+          </Button>
+          <h1 className="sm:text-xl text-lg sm:font-bold font-semibold">
             {currentDate.toLocaleString("default", { month: "long" })}{" "}
             {currentDate.getFullYear()}
           </h1>
-          <Button onClick={handleNextMonth}>Next</Button>
+          <Button
+            className="text-xs sm:text-base md:text-lg px-2 sm:px-4 py-1 sm:py-3"
+            onClick={handleNextMonth}
+          >
+            Next
+          </Button>
         </header>
 
         <div className="grid grid-cols-7 gap-2 text-center">
-          {DAYS.map((day) => (
-            <div key={day} className="font-medium text-gray-600">
+          {DAYS.map((day, idx) => (
+            <div
+              key={idx}
+              className="font-medium text-xs md:text-base text-gray-600"
+            >
               {day}
             </div>
           ))}
@@ -93,10 +99,6 @@ const App: React.FC = () => {
           ))}
 
           {days.map((date) => {
-            // const dateKey = formatDate(date)!;
-
-            // const dayEvents = events[dateKey] || [];
-
             return (
               <DateKey
                 date={date}
@@ -109,20 +111,25 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        events={events}
-        selectedDate={selectedDate!}
-        setIsSidebarOpen={setIsSidebarOpen}
-      />
+      {selectedDate && (
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          events={events}
+          selectedDate={selectedDate}
+          setModalOpen={setModalOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+        />
+      )}
 
-      <Modal
-        modalOpen={modalOpen}
-        selectedDate={selectedDate!}
-        setModalOpen={setModalOpen}
-        events={events}
-        setEvents={setEvents}
-      />
+      {selectedDate && (
+        <Modal
+          modalOpen={modalOpen}
+          selectedDate={selectedDate}
+          setModalOpen={setModalOpen}
+          events={events}
+          setEvents={setEvents}
+        />
+      )}
     </div>
   );
 };
