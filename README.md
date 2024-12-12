@@ -73,6 +73,41 @@ The Event Management Application is a modern web-based tool for scheduling event
 
 ---
 
-## Conclusion
+## How to Run Locally
 
-This application offers an efficient, user-friendly way to manage events, ensuring time conflicts are avoided. With its use of **localStorage** for persistence and modular design, the app is tailored for reliable event scheduling.
+To run the Event Management Application locally, follow these steps:
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+1. **Node.js** (version 14 or higher)
+2. **npm** (Node Package Manager)
+
+### Steps to Run Locally
+
+1. **Clone the Repository**:
+   Clone the application repository from GitHub (or another source) to your local machine:
+   ```bash
+   git clone <repository_url>
+   ```
+2. **Navigate to the Project Directory**:
+   Go to the root directory of the project:
+   ```bash
+   cd event-management-app
+   ```
+3. **Install Dependencies**:
+   Install the required dependencies using npm:
+   ```bash
+   npm install
+   ```
+4. **Start the Development Server**:
+   Run the following command to start the application in development mode:
+   ```
+   npm run dev
+   ```
+   This will launch the app locally, and it should open in your default browser at
+   http://localhost:5173.
+5. **Test the Application**:
+   You should be able to see the Event Management Application.
+   You can add events, validate them, and check the persistence in localStorage across page reloads.
